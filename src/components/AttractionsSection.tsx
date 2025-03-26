@@ -57,7 +57,6 @@ const AttractionsSection = () => {
               key={attraction.id}
               className="glass-card rounded-lg overflow-hidden transition-all hover:shadow-md"
               style={{
-                animationDelay: `${index * 0.1}s`,
                 opacity: 0,
                 animation: 'fade-in 0.5s ease-out forwards',
                 animationDelay: `${index * 0.1}s`
