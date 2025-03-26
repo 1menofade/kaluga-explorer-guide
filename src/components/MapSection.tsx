@@ -1,6 +1,8 @@
 
-import React, { useState } from 'react';
-import { MapPin, Navigation } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Navigation, Search, Filter } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 interface MapLocation {
   id: number;
@@ -56,8 +58,41 @@ const mapLocations: MapLocation[] = [
   }
 ];
 
+// Доступные категории для фильтрации
+const categories = ['Все', 'Музей', 'Культура', 'Архитектура'];
+
 const MapSection = () => {
   const [selectedLocation, setSelectedLocation] = useState<MapLocation | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Все');
+  const [filteredLocations, setFilteredLocations] = useState<MapLocation[]>(mapLocations);
+
+  // Фильтрация маркеров на карте
+  useEffect(() => {
+    let result = mapLocations;
+    
+    // Фильтрация по поисковому запросу
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        location => 
+          location.name.toLowerCase().includes(query) || 
+          location.address.toLowerCase().includes(query)
+      );
+    }
+    
+    // Фильтрация по категории
+    if (selectedCategory !== 'Все') {
+      result = result.filter(location => location.category === selectedCategory);
+    }
+    
+    setFilteredLocations(result);
+    
+    // Сбросим выбранную локацию, если она более не видна после фильтрации
+    if (selectedLocation && !result.some(loc => loc.id === selectedLocation.id)) {
+      setSelectedLocation(null);
+    }
+  }, [searchQuery, selectedCategory, selectedLocation]);
 
   return (
     <section id="map" className="py-24 bg-white">
@@ -65,6 +100,45 @@ const MapSection = () => {
         <div className="text-center mb-16">
           <span className="section-subtitle">Карта</span>
           <h2 className="section-title">Исследуйте Калугу</h2>
+        </div>
+
+        {/* Панель поиска и фильтрации */}
+        <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
+          <div className="relative w-full sm:w-96">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-kaluga-500" size={18} />
+            <Input
+              className="pl-10 border-kaluga-100 focus-visible:ring-kaluga-500"
+              placeholder="Поиск на карте..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          
+          <Popover>
+            <PopoverTrigger asChild>
+              <button 
+                className="flex items-center px-4 py-2 bg-white border border-kaluga-100 rounded-md shadow-sm hover:bg-kaluga-50 transition-colors text-kaluga-700"
+              >
+                <Filter size={16} className="mr-2" />
+                <span>{selectedCategory === 'Все' ? 'Категории' : selectedCategory}</span>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-0">
+              <div className="py-2">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    className={`w-full px-4 py-2 text-left hover:bg-kaluga-50 transition-colors ${
+                      selectedCategory === category ? 'bg-kaluga-100 font-medium' : ''
+                    }`}
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden glass-card">
@@ -76,7 +150,7 @@ const MapSection = () => {
             />
           </div>
           
-          {mapLocations.map((location) => (
+          {filteredLocations.map((location) => (
             <button
               key={location.id}
               className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2 group"
@@ -114,6 +188,12 @@ const MapSection = () => {
               </span>
               <p className="text-kaluga-700 text-sm mb-3">{selectedLocation.address}</p>
               <a 
+                href={`/attraction/${selectedLocation.id}`}
+                className="inline-block text-kaluga-500 hover:text-kaluga-700 text-sm font-medium mb-2"
+              >
+                Подробнее
+              </a>
+              <a 
                 href={`https://maps.google.com/?q=${selectedLocation.name}, Калуга`} 
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -127,9 +207,24 @@ const MapSection = () => {
         </div>
         
         <div className="text-center mt-8">
-          <p className="text-kaluga-600">
-            Нажмите на маркеры, чтобы узнать больше о достопримечательностях города.
-          </p>
+          {filteredLocations.length === 0 ? (
+            <p className="text-kaluga-600">
+              По вашему запросу ничего не найдено. 
+              <button 
+                className="ml-2 text-kaluga-500 hover:text-kaluga-700 font-medium"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('Все');
+                }}
+              >
+                Сбросить фильтры
+              </button>
+            </p>
+          ) : (
+            <p className="text-kaluga-600">
+              Нажмите на маркеры, чтобы узнать больше о достопримечательностях города.
+            </p>
+          )}
         </div>
       </div>
     </section>
