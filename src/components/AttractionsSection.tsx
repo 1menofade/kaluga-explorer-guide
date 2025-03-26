@@ -1,5 +1,5 @@
+
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { MapPin, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";

@@ -1,8 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Navigation, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Link } from 'react-router-dom';
 
 interface MapLocation {
   id: number;
@@ -66,6 +67,8 @@ const MapSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Все');
   const [filteredLocations, setFilteredLocations] = useState<MapLocation[]>(mapLocations);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const yandexMapRef = useRef<any>(null);
 
   // Фильтрация маркеров на карте
   useEffect(() => {
@@ -93,6 +96,94 @@ const MapSection = () => {
       setSelectedLocation(null);
     }
   }, [searchQuery, selectedCategory, selectedLocation]);
+
+  // Инициализация Яндекс.Карт
+  useEffect(() => {
+    // Загрузка API Яндекс.Карт
+    const loadYandexMap = () => {
+      if (!window.ymaps) {
+        const script = document.createElement('script');
+        script.src = 'https://api-maps.yandex.ru/2.1/?apikey=ваш_API_ключ&lang=ru_RU';
+        script.async = true;
+        script.onload = initializeMap;
+        document.body.appendChild(script);
+      } else {
+        initializeMap();
+      }
+    };
+
+    const initializeMap = () => {
+      if (!window.ymaps || !mapRef.current) return;
+
+      window.ymaps.ready(() => {
+        // Создаем карту
+        yandexMapRef.current = new window.ymaps.Map(mapRef.current, {
+          center: [54.513845, 36.261615], // Примерные координаты центра Калуги
+          zoom: 13,
+          controls: ['zoomControl', 'fullscreenControl', 'geolocationControl']
+        });
+
+        // Добавляем метки на карту
+        addPlacemarksToMap();
+      });
+    };
+
+    const addPlacemarksToMap = () => {
+      if (!window.ymaps || !yandexMapRef.current) return;
+
+      // Очищаем все существующие метки
+      yandexMapRef.current.geoObjects.removeAll();
+
+      // Добавляем метки для каждой отфильтрованной локации
+      filteredLocations.forEach(location => {
+        window.ymaps.geocode(`Калуга, ${location.address}`).then((res: any) => {
+          const firstGeoObject = res.geoObjects.get(0);
+          const coordinates = firstGeoObject.geometry.getCoordinates();
+
+          const placemark = new window.ymaps.Placemark(coordinates, {
+            balloonContentHeader: location.name,
+            balloonContentBody: `
+              <div>
+                <p>${location.category}</p>
+                <p>${location.address}</p>
+              </div>
+            `,
+            hintContent: location.name
+          }, {
+            preset: 'islands#blueCircleDotIconWithCaption',
+            iconCaption: location.name,
+            iconCaptionMaxWidth: '100'
+          });
+
+          placemark.events.add('click', () => {
+            setSelectedLocation(location);
+          });
+
+          yandexMapRef.current.geoObjects.add(placemark);
+        });
+      });
+
+      // Если есть локации, масштабируем карту чтобы вместить все метки
+      if (filteredLocations.length > 0) {
+        setTimeout(() => {
+          if (yandexMapRef.current.geoObjects.getLength() > 0) {
+            yandexMapRef.current.setBounds(
+              yandexMapRef.current.geoObjects.getBounds(), 
+              { checkZoomRange: true, zoomMargin: 30 }
+            );
+          }
+        }, 1000);
+      }
+    };
+
+    loadYandexMap();
+
+    return () => {
+      if (yandexMapRef.current) {
+        yandexMapRef.current.destroy();
+      }
+    };
+  }, [filteredLocations]);
 
   return (
     <section id="map" className="py-24 bg-white">
@@ -142,33 +233,12 @@ const MapSection = () => {
         </div>
 
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden glass-card">
-          <div className="absolute inset-0 bg-kaluga-50">
-            <img 
-              src="https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" 
-              alt="Карта Калуги" 
-              className="w-full h-full object-cover opacity-20"
-            />
+          {/* Яндекс карта */}
+          <div ref={mapRef} className="absolute inset-0 bg-kaluga-50">
+            <div className="flex items-center justify-center w-full h-full">
+              <p className="text-kaluga-500">Загрузка карты...</p>
+            </div>
           </div>
-          
-          {filteredLocations.map((location) => (
-            <button
-              key={location.id}
-              className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2 group"
-              style={{ top: location.coordinates.top, left: location.coordinates.left }}
-              onClick={() => setSelectedLocation(location)}
-            >
-              <div className="relative">
-                <div className="w-8 h-8 bg-kaluga-500 rounded-full flex items-center justify-center text-white shadow-md group-hover:bg-kaluga-600 transition-colors">
-                  <MapPin size={16} />
-                </div>
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div className="bg-white px-3 py-1 rounded shadow-md text-kaluga-800 text-sm font-medium">
-                    {location.name}
-                  </div>
-                </div>
-              </div>
-            </button>
-          ))}
           
           {selectedLocation && (
             <div className="absolute right-4 bottom-4 glass-card rounded-lg p-4 max-w-xs animate-scale-in">
@@ -187,21 +257,23 @@ const MapSection = () => {
                 {selectedLocation.category}
               </span>
               <p className="text-kaluga-700 text-sm mb-3">{selectedLocation.address}</p>
-              <a 
-                href={`/attraction/${selectedLocation.id}`}
-                className="inline-block text-kaluga-500 hover:text-kaluga-700 text-sm font-medium mb-2"
-              >
-                Подробнее
-              </a>
-              <a 
-                href={`https://maps.google.com/?q=${selectedLocation.name}, Калуга`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-kaluga-500 hover:text-kaluga-700 text-sm font-medium"
-              >
-                <Navigation size={14} className="mr-1" />
-                Построить маршрут
-              </a>
+              <div className="flex flex-col space-y-2">
+                <Link 
+                  to={`/attraction/${selectedLocation.id}`}
+                  className="inline-block text-kaluga-500 hover:text-kaluga-700 text-sm font-medium"
+                >
+                  Подробнее
+                </Link>
+                <a 
+                  href={`https://yandex.ru/maps/?text=Калуга, ${selectedLocation.address}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-kaluga-500 hover:text-kaluga-700 text-sm font-medium"
+                >
+                  <Navigation size={14} className="mr-1" />
+                  Построить маршрут
+                </a>
+              </div>
             </div>
           )}
         </div>
@@ -230,5 +302,12 @@ const MapSection = () => {
     </section>
   );
 };
+
+// Добавляем интерфейс для глобального объекта window
+declare global {
+  interface Window {
+    ymaps: any;
+  }
+}
 
 export default MapSection;
