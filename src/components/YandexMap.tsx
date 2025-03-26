@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 
 interface Point {
@@ -20,7 +19,7 @@ const YandexMap: React.FC<YandexMapProps> = ({ points }) => {
     const loadYandexMap = () => {
       if (!window.ymaps) {
         const script = document.createElement('script');
-        script.src = 'https://api-maps.yandex.ru/2.1/?apikey=ваш_API_ключ&lang=ru_RU';
+        script.src = 'https://api-maps.yandex.ru/2.1/?apikey=your_API_key&lang=ru_RU';
         script.async = true;
         script.onload = initializeMap;
         document.body.appendChild(script);

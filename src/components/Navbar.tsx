@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,12 +18,13 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Главная', href: '#home' },
-    { name: 'Достопримечательности', href: '#attractions' },
-    { name: 'История', href: '#history' },
-    { name: 'Галерея', href: '#gallery' },
-    { name: 'Карта', href: '#map' },
-    { name: 'Информация', href: '#info' },
+    { name: 'Главная', href: '/' },
+    { name: 'Достопримечательности', href: '/attractions' },
+    { name: 'Маршруты', href: '/routes' },
+    { name: 'История', href: '/#history' },
+    { name: 'Галерея', href: '/#gallery' },
+    { name: 'Карта', href: '/#map' },
+    { name: 'Информация', href: '/#info' },
   ];
 
   return (
@@ -33,21 +35,21 @@ const Navbar = () => {
       )}
     >
       <div className="container-custom flex items-center justify-between">
-        <a href="#home" className="flex items-center">
+        <Link to="/" className="flex items-center">
           <span className="text-kaluga-800 font-serif text-2xl font-medium">Калуга</span>
           <span className="ml-1 text-kaluga-500 font-serif text-xl">Гид</span>
-        </a>
+        </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-8">
           {navLinks.map((link) => (
-            <a 
+            <Link 
               key={link.name} 
-              href={link.href} 
+              to={link.href} 
               className="nav-link"
             >
               {link.name}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -69,14 +71,14 @@ const Navbar = () => {
       >
         <div className="container-custom flex flex-col space-y-4">
           {navLinks.map((link) => (
-            <a 
+            <Link 
               key={link.name} 
-              href={link.href} 
+              to={link.href} 
               className="text-kaluga-800 hover:text-kaluga-500 transition-colors py-2"
               onClick={() => setMobileMenuOpen(false)}
             >
               {link.name}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
