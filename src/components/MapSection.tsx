@@ -4,6 +4,7 @@ import { MapPin, Navigation, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Link } from 'react-router-dom';
+import { toast } from '@/components/ui/use-toast';
 
 // Define structure for map locations
 interface MapLocation {
@@ -74,6 +75,8 @@ const MapSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Все');
   const [filteredLocations, setFilteredLocations] = useState<MapLocation[]>(mapLocations);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
   
   // Refs for the map container and Yandex map instance
   const mapRef = useRef<HTMLDivElement>(null);
@@ -110,47 +113,114 @@ const MapSection = () => {
   useEffect(() => {
     // Load Yandex Maps API
     const loadYandexMap = () => {
-      if (!window.ymaps) {
+      console.log("Starting to load Yandex Maps API in MapSection");
+      
+      // Only load script if ymaps doesn't already exist
+      if (typeof window.ymaps === 'undefined') {
+        setMapLoaded(false);
+        setMapError(null);
+        
         const script = document.createElement('script');
-        // API key is defined here - replace if needed
+        // API key is defined here
         script.src = 'https://api-maps.yandex.ru/2.1/?apikey=d00a65f6-ace0-4359-bfec-61603bf77861&lang=ru_RU';
         script.async = true;
-        script.onload = initializeMap;
+        script.onload = () => {
+          console.log("Yandex Maps API script loaded in MapSection");
+          initializeMap();
+        };
+        script.onerror = () => {
+          console.error("Failed to load Yandex Maps API");
+          setMapError("Не удалось загрузить API карт. Проверьте подключение к интернету.");
+          toast({
+            title: "Ошибка загрузки карты",
+            description: "Не удалось загрузить Яндекс Карты. Пожалуйста, обновите страницу или проверьте подключение к интернету.",
+            variant: "destructive"
+          });
+        };
         document.body.appendChild(script);
       } else {
+        console.log("Yandex Maps API already loaded in MapSection");
         initializeMap();
       }
     };
 
     // Initialize the map after the API is loaded
     const initializeMap = () => {
-      if (!window.ymaps || !mapRef.current) return;
+      if (typeof window.ymaps === 'undefined') {
+        console.error("Yandex Maps API not available in MapSection initializeMap");
+        return;
+      }
+      
+      if (!mapRef.current) {
+        console.error("Map container ref not available in MapSection");
+        return;
+      }
 
       window.ymaps.ready(() => {
-        // Create new map
-        yandexMapRef.current = new window.ymaps.Map(mapRef.current, {
-          center: [54.513845, 36.261615], // Approximate coordinates of Kaluga center
-          zoom: 13,
-          controls: ['zoomControl', 'fullscreenControl', 'geolocationControl']
-        });
+        console.log("Yandex Maps API ready in MapSection");
+        
+        // Clean up existing map instance if it exists
+        if (yandexMapRef.current) {
+          yandexMapRef.current.destroy();
+          yandexMapRef.current = null;
+        }
 
-        // Add placemarks to the map
-        addPlacemarksToMap();
+        try {
+          // Create new map
+          yandexMapRef.current = new window.ymaps.Map(mapRef.current, {
+            center: [54.513845, 36.261615], // Approximate coordinates of Kaluga center
+            zoom: 13,
+            controls: ['zoomControl', 'fullscreenControl', 'geolocationControl']
+          });
+
+          console.log("Map created successfully in MapSection");
+          setMapLoaded(true);
+          
+          // Add placemarks to the map
+          addPlacemarksToMap();
+        } catch (error) {
+          console.error("Error creating map in MapSection:", error);
+          setMapError("Ошибка при создании карты");
+          toast({
+            title: "Ошибка карты",
+            description: "Произошла ошибка при создании карты. Пожалуйста, обновите страницу.",
+            variant: "destructive"
+          });
+        }
       });
     };
 
     // Function to add placemarks for each location
     const addPlacemarksToMap = () => {
-      if (!window.ymaps || !yandexMapRef.current) return;
+      if (!window.ymaps || !yandexMapRef.current) {
+        console.error("Cannot add placemarks, map or ymaps not available");
+        return;
+      }
 
+      console.log("Adding placemarks for locations:", filteredLocations);
+      
       // Clear existing placemarks
       yandexMapRef.current.geoObjects.removeAll();
 
+      // If no locations after filtering, don't try to add placemarks
+      if (filteredLocations.length === 0) {
+        console.log("No locations to add to map after filtering");
+        return;
+      }
+
       // Add placemarks for filtered locations
-      filteredLocations.forEach(location => {
+      filteredLocations.forEach((location, index) => {
+        console.log(`Geocoding location ${index + 1}: ${location.name}, ${location.address}`);
+        
         window.ymaps.geocode(`Калуга, ${location.address}`).then((res: any) => {
           const firstGeoObject = res.geoObjects.get(0);
+          if (!firstGeoObject) {
+            console.error(`No geocoding results for: Калуга, ${location.address}`);
+            return;
+          }
+          
           const coordinates = firstGeoObject.geometry.getCoordinates();
+          console.log(`Found coordinates for ${location.name}:`, coordinates);
 
           // Create and configure the placemark
           const placemark = new window.ymaps.Placemark(coordinates, {
@@ -175,17 +245,23 @@ const MapSection = () => {
 
           // Add the placemark to the map
           yandexMapRef.current.geoObjects.add(placemark);
+        }).catch((error: any) => {
+          console.error(`Error geocoding ${location.name}:`, error);
         });
       });
 
       // Adjust map bounds to show all placemarks
       if (filteredLocations.length > 0) {
         setTimeout(() => {
-          if (yandexMapRef.current.geoObjects.getLength() > 0) {
-            yandexMapRef.current.setBounds(
-              yandexMapRef.current.geoObjects.getBounds(), 
-              { checkZoomRange: true, zoomMargin: 30 }
-            );
+          if (yandexMapRef.current && yandexMapRef.current.geoObjects.getLength() > 0) {
+            try {
+              yandexMapRef.current.setBounds(
+                yandexMapRef.current.geoObjects.getBounds(), 
+                { checkZoomRange: true, zoomMargin: 30 }
+              );
+            } catch (error) {
+              console.error("Error setting map bounds:", error);
+            }
           }
         }, 1000);
       }
@@ -195,8 +271,10 @@ const MapSection = () => {
 
     // Cleanup function
     return () => {
+      console.log("Cleaning up MapSection component");
       if (yandexMapRef.current) {
         yandexMapRef.current.destroy();
+        yandexMapRef.current = null;
       }
     };
   }, [filteredLocations]);
@@ -254,9 +332,31 @@ const MapSection = () => {
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden glass-card">
           {/* Yandex map */}
           <div ref={mapRef} className="absolute inset-0 bg-kaluga-50">
-            <div className="flex items-center justify-center w-full h-full">
-              <p className="text-kaluga-500">Загрузка карты...</p>
-            </div>
+            {!mapLoaded && !mapError && (
+              <div className="flex items-center justify-center w-full h-full">
+                <div className="text-center">
+                  <div className="inline-block w-8 h-8 border-4 border-kaluga-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                  <p className="text-kaluga-500">Загрузка карты...</p>
+                </div>
+              </div>
+            )}
+            
+            {mapError && (
+              <div className="flex items-center justify-center w-full h-full">
+                <div className="text-center max-w-md">
+                  <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+                    <p className="font-medium">Ошибка загрузки карты</p>
+                    <p className="text-sm">{mapError}</p>
+                  </div>
+                  <button 
+                    className="px-4 py-2 bg-kaluga-500 text-white rounded-md hover:bg-kaluga-600"
+                    onClick={() => window.location.reload()}
+                  >
+                    Обновить страницу
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Location details card */}
