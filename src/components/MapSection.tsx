@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Link } from 'react-router-dom';
 
+// Define structure for map locations
 interface MapLocation {
   id: number;
   name: string;
@@ -16,6 +17,8 @@ interface MapLocation {
   };
 }
 
+// Pre-defined locations for the map
+// You can modify or add more locations by updating this array
 const mapLocations: MapLocation[] = [
   {
     id: 1,
@@ -59,22 +62,28 @@ const mapLocations: MapLocation[] = [
   }
 ];
 
-// Доступные категории для фильтрации
+// Available categories for filtering
 const categories = ['Все', 'Музей', 'Культура', 'Архитектура'];
 
+/**
+ * MapSection component renders an interactive map with search and filtering functionality
+ */
 const MapSection = () => {
+  // State for selected location, search query, category filter and filtered locations
   const [selectedLocation, setSelectedLocation] = useState<MapLocation | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Все');
   const [filteredLocations, setFilteredLocations] = useState<MapLocation[]>(mapLocations);
+  
+  // Refs for the map container and Yandex map instance
   const mapRef = useRef<HTMLDivElement>(null);
   const yandexMapRef = useRef<any>(null);
 
-  // Фильтрация маркеров на карте
+  // Filter locations based on search query and selected category
   useEffect(() => {
     let result = mapLocations;
     
-    // Фильтрация по поисковому запросу
+    // Filter by search query
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
       result = result.filter(
@@ -84,26 +93,27 @@ const MapSection = () => {
       );
     }
     
-    // Фильтрация по категории
+    // Filter by category
     if (selectedCategory !== 'Все') {
       result = result.filter(location => location.category === selectedCategory);
     }
     
     setFilteredLocations(result);
     
-    // Сбросим выбранную локацию, если она более не видна после фильтрации
+    // Reset selected location if it's no longer visible after filtering
     if (selectedLocation && !result.some(loc => loc.id === selectedLocation.id)) {
       setSelectedLocation(null);
     }
   }, [searchQuery, selectedCategory, selectedLocation]);
 
-  // Инициализация Яндекс.Карт
+  // Initialize Yandex Maps
   useEffect(() => {
-    // Загрузка API Яндекс.Карт
+    // Load Yandex Maps API
     const loadYandexMap = () => {
       if (!window.ymaps) {
         const script = document.createElement('script');
-        script.src = 'https://api-maps.yandex.ru/2.1/?apikey=ваш_API_ключ&lang=ru_RU';
+        // API key is defined here - replace if needed
+        script.src = 'https://api-maps.yandex.ru/2.1/?apikey=d00a65f6-ace0-4359-bfec-61603bf77861&lang=ru_RU';
         script.async = true;
         script.onload = initializeMap;
         document.body.appendChild(script);
@@ -112,34 +122,37 @@ const MapSection = () => {
       }
     };
 
+    // Initialize the map after the API is loaded
     const initializeMap = () => {
       if (!window.ymaps || !mapRef.current) return;
 
       window.ymaps.ready(() => {
-        // Создаем карту
+        // Create new map
         yandexMapRef.current = new window.ymaps.Map(mapRef.current, {
-          center: [54.513845, 36.261615], // Примерные координаты центра Калуги
+          center: [54.513845, 36.261615], // Approximate coordinates of Kaluga center
           zoom: 13,
           controls: ['zoomControl', 'fullscreenControl', 'geolocationControl']
         });
 
-        // Добавляем метки на карту
+        // Add placemarks to the map
         addPlacemarksToMap();
       });
     };
 
+    // Function to add placemarks for each location
     const addPlacemarksToMap = () => {
       if (!window.ymaps || !yandexMapRef.current) return;
 
-      // Очищаем все существующие метки
+      // Clear existing placemarks
       yandexMapRef.current.geoObjects.removeAll();
 
-      // Добавляем метки для каждой отфильтрованной локации
+      // Add placemarks for filtered locations
       filteredLocations.forEach(location => {
         window.ymaps.geocode(`Калуга, ${location.address}`).then((res: any) => {
           const firstGeoObject = res.geoObjects.get(0);
           const coordinates = firstGeoObject.geometry.getCoordinates();
 
+          // Create and configure the placemark
           const placemark = new window.ymaps.Placemark(coordinates, {
             balloonContentHeader: location.name,
             balloonContentBody: `
@@ -155,15 +168,17 @@ const MapSection = () => {
             iconCaptionMaxWidth: '100'
           });
 
+          // Add click event to the placemark
           placemark.events.add('click', () => {
             setSelectedLocation(location);
           });
 
+          // Add the placemark to the map
           yandexMapRef.current.geoObjects.add(placemark);
         });
       });
 
-      // Если есть локации, масштабируем карту чтобы вместить все метки
+      // Adjust map bounds to show all placemarks
       if (filteredLocations.length > 0) {
         setTimeout(() => {
           if (yandexMapRef.current.geoObjects.getLength() > 0) {
@@ -178,6 +193,7 @@ const MapSection = () => {
 
     loadYandexMap();
 
+    // Cleanup function
     return () => {
       if (yandexMapRef.current) {
         yandexMapRef.current.destroy();
@@ -193,8 +209,9 @@ const MapSection = () => {
           <h2 className="section-title">Исследуйте Калугу</h2>
         </div>
 
-        {/* Панель поиска и фильтрации */}
+        {/* Search and filter panel */}
         <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
+          {/* Search input */}
           <div className="relative w-full sm:w-96">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-kaluga-500" size={18} />
             <Input
@@ -205,6 +222,7 @@ const MapSection = () => {
             />
           </div>
           
+          {/* Category filter */}
           <Popover>
             <PopoverTrigger asChild>
               <button 
@@ -232,14 +250,16 @@ const MapSection = () => {
           </Popover>
         </div>
 
+        {/* Map container */}
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden glass-card">
-          {/* Яндекс карта */}
+          {/* Yandex map */}
           <div ref={mapRef} className="absolute inset-0 bg-kaluga-50">
             <div className="flex items-center justify-center w-full h-full">
               <p className="text-kaluga-500">Загрузка карты...</p>
             </div>
           </div>
           
+          {/* Location details card */}
           {selectedLocation && (
             <div className="absolute right-4 bottom-4 glass-card rounded-lg p-4 max-w-xs animate-scale-in">
               <div className="flex justify-between items-start mb-2">
@@ -247,6 +267,7 @@ const MapSection = () => {
                 <button 
                   className="text-kaluga-500 hover:text-kaluga-700"
                   onClick={() => setSelectedLocation(null)}
+                  aria-label="Закрыть"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -278,6 +299,7 @@ const MapSection = () => {
           )}
         </div>
         
+        {/* Help text */}
         <div className="text-center mt-8">
           {filteredLocations.length === 0 ? (
             <p className="text-kaluga-600">
@@ -303,7 +325,7 @@ const MapSection = () => {
   );
 };
 
-// Добавляем интерфейс для глобального объекта window
+// Add interface for global window object with ymaps property
 declare global {
   interface Window {
     ymaps: any;
