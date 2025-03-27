@@ -33,7 +33,8 @@ const Navbar = () => {
     { name: 'Достопримечательности', href: '/attractions' },
     { name: 'Маршруты', href: '/routes' },
     { name: 'История', href: '/history' },
-    { name: 'Галерея', href: '/gallery' },
+    { name: 'Рестораны', href: '/restaurants' },
+    { name: 'Ночлег', href: '/accommodations' },
     { name: 'Карта', href: '/map' },
     { name: 'Информация', href: '/info' },
   ];

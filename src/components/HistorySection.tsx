@@ -1,6 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface HistoricalEvent {
   year: string;
@@ -105,12 +106,12 @@ const HistorySection = () => {
         </div>
         
         <div className="text-center mt-16">
-          <a 
-            href="#" 
+          <Link 
+            to="/history" 
             className="inline-flex items-center px-6 py-3 rounded-full border border-kaluga-200 text-kaluga-700 hover:bg-kaluga-50 transition-colors font-medium"
           >
             Узнать больше об истории
-          </a>
+          </Link>
         </div>
       </div>
     </section>

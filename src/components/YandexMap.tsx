@@ -78,6 +78,14 @@ const YandexMap: React.FC<YandexMapProps> = ({ points }) => {
           });
           
           console.log("Map created successfully, adding points...");
+          
+          // If there are no points, just return
+          if (!points || points.length === 0) {
+            console.log("No points to add to map");
+            return;
+          }
+          
+          // Add points and create route
           addPointsToMap();
         } catch (error) {
           console.error("Error creating map:", error);
@@ -92,93 +100,112 @@ const YandexMap: React.FC<YandexMapProps> = ({ points }) => {
       console.log("Adding points to map:", points);
       const myGeoObjects: any[] = [];
       
-      // If no points, just return
-      if (points.length === 0) {
-        console.log("No points to add to map");
-        return;
-      }
-
-      // Add placemarks for each point in the points array
+      // Create a collection for storing point coordinates after geocoding
+      const pointCoordinates: any[] = [];
+      let geocodingPromises: Promise<any>[] = [];
+      
+      // Create geocoding promises for each point
       points.forEach((point, index) => {
         const searchQuery = `Калуга, ${point.address || point.name}`;
         console.log(`Geocoding point ${index + 1}: ${searchQuery}`);
         
         // Create a geocoder to search by address
-        const geocoder = window.ymaps.geocode(searchQuery);
+        const geocodePromise = window.ymaps.geocode(searchQuery)
+          .then((res: any) => {
+            if (!res.geoObjects.get(0)) {
+              console.error(`No geocoding results for: ${searchQuery}`);
+              return null;
+            }
+            
+            const coordinates = res.geoObjects.get(0).geometry.getCoordinates();
+            console.log(`Found coordinates for ${point.name}:`, coordinates);
+            
+            // Store coordinates for later use in route building
+            pointCoordinates[index] = coordinates;
+            
+            // Create a placemark for the route point
+            const placemark = new window.ymaps.Placemark(
+              coordinates, 
+              { 
+                // Balloon content shown when clicking on the placemark
+                balloonContent: `<div style="padding: 10px">
+                  <h3 style="font-weight: bold; margin-bottom: 5px">${point.name}</h3>
+                  <p>${point.address || ''}</p>
+                </div>`,
+                iconCaption: `${index + 1}. ${point.name}`
+              }, 
+              { 
+                // Different icons for start, end, and intermediate points
+                preset: index === 0 
+                  ? 'islands#redCircleDotIconWithCaption' 
+                  : index === points.length - 1 
+                    ? 'islands#darkGreenCircleDotIconWithCaption' 
+                    : 'islands#blueCircleDotIconWithCaption',
+                iconCaptionMaxWidth: '200'
+              }
+            );
+            
+            yandexMapRef.current.geoObjects.add(placemark);
+            myGeoObjects.push(placemark);
+            return coordinates;
+          })
+          .catch((error: any) => {
+            console.error(`Error geocoding ${point.name}:`, error);
+            return null;
+          });
+          
+        geocodingPromises.push(geocodePromise);
+      });
+      
+      // After all points are geocoded, build a route
+      Promise.all(geocodingPromises).then((results) => {
+        // Filter out any null results
+        const validPoints = results.filter(point => point !== null);
         
-        geocoder.then((res: any) => {
-          if (!res.geoObjects.get(0)) {
-            console.error(`No geocoding results for: ${searchQuery}`);
-            return;
+        if (validPoints.length < 2) {
+          console.log("Not enough valid points to build a route");
+          // Center the map on the first valid point
+          if (validPoints.length === 1) {
+            yandexMapRef.current.setCenter(validPoints[0], 15);
           }
-          
-          const coordinates = res.geoObjects.get(0).geometry.getCoordinates();
-          console.log(`Found coordinates for ${point.name}:`, coordinates);
-          
-          // Create a placemark for the route point
-          const placemark = new window.ymaps.Placemark(
-            coordinates, 
-            { 
-              // Balloon content shown when clicking on the placemark
-              balloonContent: `<div style="padding: 10px">
-                <h3 style="font-weight: bold; margin-bottom: 5px">${point.name}</h3>
-                <p>${point.address || ''}</p>
-              </div>`,
-              iconCaption: `${index + 1}. ${point.name}`
+          return;
+        }
+        
+        console.log("All points geocoded, building route between points...");
+        
+        // Create a multi-route object for pedestrian navigation
+        try {
+          const multiRoute = new window.ymaps.multiRouter.MultiRoute(
+            {
+              referencePoints: validPoints,
+              params: { routingMode: 'pedestrian' }
             }, 
-            { 
-              // Different icons for start, end, and intermediate points
-              preset: index === 0 
-                ? 'islands#redCircleDotIconWithCaption' 
-                : index === points.length - 1 
-                  ? 'islands#darkGreenCircleDotIconWithCaption' 
-                  : 'islands#blueCircleDotIconWithCaption',
-              iconCaptionMaxWidth: '200'
+            {
+              // Route styling options
+              boundsAutoApply: true,
+              wayPointStartIconLayout: "default#image",
+              wayPointStartIconImageHref: "",
+              wayPointFinishIconLayout: "default#image",
+              wayPointFinishIconImageHref: "",
+              routeActiveStrokeWidth: 4,
+              routeActiveStrokeColor: "#8B5CF6"
             }
           );
           
-          yandexMapRef.current.geoObjects.add(placemark);
-          myGeoObjects.push(placemark);
+          // Add the route to the map
+          yandexMapRef.current.geoObjects.add(multiRoute);
           
-          // If this is the last point, center and scale the map
-          if (index === points.length - 1 && myGeoObjects.length > 0) {
+          // Set the map bounds to include all points
+          if (myGeoObjects.length > 0) {
             console.log("Setting map bounds...");
             yandexMapRef.current.setBounds(
               yandexMapRef.current.geoObjects.getBounds(), 
               { checkZoomRange: true, zoomMargin: 30 }
             );
-            
-            // If there are more than one point, build a route
-            if (points.length > 1) {
-              console.log("Building route between points...");
-              // Create a multi-route object for pedestrian navigation
-              try {
-                const multiRoute = new window.ymaps.multiRouter.MultiRoute(
-                  {
-                    referencePoints: points.map(p => `Калуга, ${p.address || p.name}`),
-                    params: { routingMode: 'pedestrian' }
-                  }, 
-                  {
-                    // Route styling options
-                    boundsAutoApply: true,
-                    wayPointStartIconLayout: "default#image",
-                    wayPointStartIconImageHref: "",
-                    wayPointFinishIconLayout: "default#image",
-                    wayPointFinishIconImageHref: "",
-                    routeActiveStrokeWidth: 4,
-                    routeActiveStrokeColor: "#8B5CF6"
-                  }
-                );
-                
-                yandexMapRef.current.geoObjects.add(multiRoute);
-              } catch (error) {
-                console.error("Error creating route:", error);
-              }
-            }
           }
-        }).catch((error: any) => {
-          console.error(`Error geocoding ${point.name}:`, error);
-        });
+        } catch (error) {
+          console.error("Error creating route:", error);
+        }
       });
     };
 

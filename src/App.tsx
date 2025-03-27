@@ -9,9 +9,10 @@ import Attractions from "./pages/Attractions";
 import AttractionDetail from "./pages/AttractionDetail";
 import RoutesPage from "./pages/Routes";
 import HistoryPage from "./pages/History";
-import GalleryPage from "./pages/Gallery";
 import MapPage from "./pages/Map";
 import InfoPage from "./pages/Info";
+import RestaurantsPage from "./pages/Restaurants";
+import AccommodationsPage from "./pages/Accommodations";
 import NotFound from "./pages/NotFound";
 
 // Create a new QueryClient instance for React Query
@@ -30,11 +31,12 @@ const App = () => (
           <Route path="/attraction/:id" element={<AttractionDetail />} />
           <Route path="/routes" element={<RoutesPage />} />
           
-          {/* New Pages */}
+          {/* Pages */}
           <Route path="/history" element={<HistoryPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/info" element={<InfoPage />} />
+          <Route path="/restaurants" element={<RestaurantsPage />} />
+          <Route path="/accommodations" element={<AccommodationsPage />} />
           
           {/* Catch-all route for 404 */}
           <Route path="*" element={<NotFound />} />
