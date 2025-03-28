@@ -41,6 +41,7 @@ const HistorySection = () => {
   const timelineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Функция для добавления анимации при прокрутке
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -52,11 +53,25 @@ const HistorySection = () => {
       { threshold: 0.1 }
     );
 
+    // Получаем все элементы временной шкалы
     const timelineItems = document.querySelectorAll('.timeline-item');
+    
+    // Применяем наблюдателя ко всем элементам
     timelineItems.forEach(item => {
       observer.observe(item);
     });
 
+    // Принудительно добавляем анимацию, если элементы уже видны
+    setTimeout(() => {
+      timelineItems.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          item.classList.add('animate-fade-in');
+        }
+      });
+    }, 300);
+
+    // Очищаем наблюдателя при размонтировании компонента
     return () => {
       timelineItems.forEach(item => {
         observer.unobserve(item);
@@ -85,7 +100,11 @@ const HistorySection = () => {
               className={`timeline-item relative flex ${
                 index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
               } opacity-0 mb-16 last:mb-0`}
-              style={{ transitionDelay: `${index * 0.2}s` }}
+              style={{ 
+                transitionDelay: `${index * 0.2}s`,
+                opacity: 0, // Начальная непрозрачность
+                transition: 'opacity 0.5s ease-in-out' // Анимация появления
+              }}
             >
               <div className={`w-1/2 ${index % 2 === 0 ? 'pr-12 text-right' : 'pl-12'}`}>
                 <div className={`glass-card p-6 rounded-lg ${index % 2 === 0 ? 'ml-auto' : ''} max-w-md`}>
@@ -114,6 +133,12 @@ const HistorySection = () => {
           </Link>
         </div>
       </div>
+
+      <style jsx>{`
+        .animate-fade-in {
+          opacity: 1 !important;
+        }
+      `}</style>
     </section>
   );
 };

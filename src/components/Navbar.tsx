@@ -5,19 +5,19 @@ import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 
 /**
- * Navbar component for site navigation
- * Contains both desktop and mobile navigation menus
+ * Компонент навигационной панели для сайта
+ * Содержит настольное и мобильное меню
  */
 const Navbar = () => {
-  // State to track if the user has scrolled down the page
+  // Состояние для отслеживания прокрутки страницы
   const [isScrolled, setIsScrolled] = useState(false);
-  // State to track if the mobile menu is open
+  // Состояние для отслеживания открытия мобильного меню
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  // Get current location to highlight active links
+  // Получение текущего местоположения для подсветки активных ссылок
   const location = useLocation();
 
   useEffect(() => {
-    // Function to handle scroll events
+    // Функция для обработки событий прокрутки
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -26,20 +26,20 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Navigation links configuration
-  // You can modify this array to add/remove/change menu items
+  // Конфигурация навигационных ссылок
+  // Вы можете изменить этот массив, чтобы добавить/удалить/изменить пункты меню
   const navLinks = [
     { name: 'Главная', href: '/' },
-    { name: 'Достопримечательности', href: '/attractions' },
+    { name: 'Достопр.', href: '/attractions' },
     { name: 'Маршруты', href: '/routes' },
     { name: 'История', href: '/history' },
     { name: 'Рестораны', href: '/restaurants' },
     { name: 'Ночлег', href: '/accommodations' },
     { name: 'Карта', href: '/map' },
-    { name: 'Информация', href: '/info' },
+    { name: 'Инфо', href: '/info' },
   ];
 
-  // Helper function to determine if a link is active
+  // Вспомогательная функция для определения активной ссылки
   const isActive = (href: string) => {
     if (href === '/') {
       return location.pathname === '/';
@@ -50,25 +50,25 @@ const Navbar = () => {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out py-4',
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out py-2',
         isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm' : 'bg-transparent'
       )}
     >
       <div className="container-custom flex items-center justify-between">
-        {/* Logo/Site Title */}
+        {/* Логотип/Название сайта */}
         <Link to="/" className="flex items-center">
-          <span className="text-kaluga-800 font-serif text-2xl font-medium">Калуга</span>
-          <span className="ml-1 text-kaluga-500 font-serif text-xl">Гид</span>
+          <span className="text-kaluga-800 font-serif text-xl font-medium">Калуга</span>
+          <span className="ml-1 text-kaluga-500 font-serif text-lg">Гид</span>
         </Link>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-8">
+        {/* Настольное меню */}
+        <div className="hidden md:flex space-x-4">
           {navLinks.map((link) => (
             <Link 
               key={link.name} 
               to={link.href} 
               className={cn(
-                "nav-link transition-colors",
+                "nav-link text-sm transition-colors",
                 isActive(link.href) ? "text-kaluga-600 font-medium" : "text-kaluga-700 hover:text-kaluga-500"
               )}
             >
@@ -77,7 +77,7 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Кнопка мобильного меню */}
         <button 
           className="md:hidden text-kaluga-800"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -87,7 +87,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Мобильное меню */}
       <div 
         className={cn(
           'md:hidden absolute w-full bg-white/95 backdrop-blur-md shadow-md transition-all duration-300 ease-in-out overflow-hidden',

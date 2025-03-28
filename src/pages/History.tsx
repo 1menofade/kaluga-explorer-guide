@@ -1,16 +1,15 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
-import HistorySection from '@/components/HistorySection';
 import Footer from '@/components/Footer';
-import { Clock, MapPin, BookOpen } from 'lucide-react';
+import { Clock, MapPin, BookOpen, Calendar, Award, FileText } from 'lucide-react';
 
 /**
- * History page that showcases Kaluga's historical timeline
- * This page provides detailed historical information about Kaluga
+ * Страница истории, демонстрирующая хронологию Калуги
+ * Содержит подробную историческую информацию о городе
  */
 const History = () => {
-  // Historical periods of Kaluga
+  // Исторические периоды развития Калуги
   const historicalPeriods = [
     {
       period: "Основание и средневековый период (1371-1600)",
@@ -69,7 +68,7 @@ const History = () => {
     }
   ];
 
-  // Historical landmarks in Kaluga
+  // Исторические достопримечательности Калуги
   const historicalLandmarks = [
     {
       name: "Каменный мост",
@@ -98,11 +97,155 @@ const History = () => {
     }
   ];
 
+  // Важные исторические фигуры Калуги
+  const historicalFigures = [
+    {
+      name: "К.Э. Циолковский",
+      years: "1857-1935",
+      description: "Великий русский ученый, основоположник современной космонавтики. Жил и работал в Калуге с 1892 по 1935 год. Разработал теорию ракетного движения, способы преодоления земного притяжения, идеи о межпланетных полетах и космических станциях.",
+      achievements: [
+        "Разработка теории многоступенчатых ракет",
+        "Создание теории межпланетных сообщений",
+        "Опубликование более 400 научных работ",
+        "Предложение использования жидкого топлива для ракет"
+      ]
+    },
+    {
+      name: "А.Л. Чижевский",
+      years: "1897-1964",
+      description: "Биофизик, основоположник гелиобиологии и аэроионификации. Исследовал влияние космических факторов на биологические процессы. Был близким другом и соратником К.Э. Циолковского.",
+      achievements: [
+        "Создание теории о влиянии солнечной активности на земные процессы",
+        "Изобретение люстры Чижевского (ионизатора воздуха)",
+        "Фундаментальные исследования в области космической биологии"
+      ]
+    },
+    {
+      name: "П.М. Голубицкий",
+      years: "1845-1911",
+      description: "Выдающийся русский изобретатель в области телефонии. Жил и работал в селе Тарусово Калужской губернии, где создал одну из первых в России телефонных станций.",
+      achievements: [
+        "Изобретение многоканального телефона",
+        "Создание телефонов для железных дорог",
+        "Получение 10 патентов на изобретения в области телефонии"
+      ]
+    }
+  ];
+
+  // Хронология по векам
+  const centuryTimeline = [
+    {
+      century: "XIV век",
+      events: [
+        { year: "1371", event: "Первое упоминание Калуги в грамоте литовского князя Ольгерда" }
+      ]
+    },
+    {
+      century: "XV век",
+      events: [
+        { year: "1480-е", event: "Строительство деревянной крепости на высоком берегу Оки" },
+        { year: "1485", event: "Калуга входит в состав Московского княжества" }
+      ]
+    },
+    {
+      century: "XVI век",
+      events: [
+        { year: "1512", event: "Успешная оборона города от набега крымских татар" },
+        { year: "1565-1572", event: "Калуга входит в опричнину Ивана Грозного" },
+        { year: "1595", event: "Упоминание о Калуге как крупном торговом центре" }
+      ]
+    },
+    {
+      century: "XVII век",
+      events: [
+        { year: "1606-1607", event: "Восстание под предводительством Ивана Болотникова" },
+        { year: "1610-1611", event: "Калуга – столица «царя» Лжедмитрия II" },
+        { year: "1617", event: "Строительство новых укреплений" },
+        { year: "1622", event: "Начало строительства каменного кремля" },
+        { year: "1681", event: "Большой пожар в Калуге" }
+      ]
+    },
+    {
+      century: "XVIII век",
+      events: [
+        { year: "1719", event: "Калуга становится центром провинции" },
+        { year: "1775", event: "Образование Калужского наместничества" },
+        { year: "1777", event: "Утверждение регулярного плана застройки города" },
+        { year: "1784-1796", event: "Строительство Гостиного двора" },
+        { year: "1785", event: "Строительство Каменного моста" },
+        { year: "1799", event: "Учреждение городской думы" }
+      ]
+    },
+    {
+      century: "XIX век",
+      events: [
+        { year: "1812", event: "Отечественная война, Калужская губерния становится тыловой базой русской армии" },
+        { year: "1823-1831", event: "Строительство Присутственных мест" },
+        { year: "1826", event: "Открытие первого в городе театра" },
+        { year: "1859", event: "Открытие женской гимназии" },
+        { year: "1874", event: "Через Калугу прошла Сызрано-Вяземская железная дорога" },
+        { year: "1892", event: "В Калугу приезжает К.Э. Циолковский" },
+        { year: "1897", event: "Первая всеобщая перепись населения, в Калуге проживало 49,5 тыс. человек" }
+      ]
+    },
+    {
+      century: "XX век",
+      events: [
+        { year: "1908", event: "Начало работы электростанции и появление электрического освещения" },
+        { year: "1917", event: "Установление Советской власти в Калуге" },
+        { year: "1929", event: "Калуга становится центром Калужского округа Московской области" },
+        { year: "1935", event: "Смерть К.Э. Циолковского" },
+        { year: "1941, 12 октября", event: "Оккупация Калуги немецкими войсками" },
+        { year: "1941, 30 декабря", event: "Освобождение Калуги" },
+        { year: "1944", event: "Образование Калужской области с центром в Калуге" },
+        { year: "1957", event: "Открытие первого в мире Государственного музея истории космонавтики" },
+        { year: "1967", event: "Празднование 600-летия города" },
+        { year: "1980-е", event: "Развитие промышленности, строительство новых микрорайонов" }
+      ]
+    },
+    {
+      century: "XXI век",
+      events: [
+        { year: "2002", event: "Открытие второй очереди музея космонавтики" },
+        { year: "2007", event: "Создание автомобильного кластера" },
+        { year: "2016", event: "Калуга признана самым благоустроенным областным центром России" },
+        { year: "2021", event: "Празднование 650-летия основания Калуги" }
+      ]
+    }
+  ];
+
+  // Добавляем эффект анимации при прокрутке
+  useEffect(() => {
+    const animateOnScroll = () => {
+      const elements = document.querySelectorAll('.animate-on-scroll');
+      
+      elements.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.8) {
+          element.classList.add('opacity-100');
+          element.classList.remove('opacity-0');
+          element.classList.add('translate-y-0');
+          element.classList.remove('translate-y-10');
+        }
+      });
+    };
+    
+    // Вызываем один раз для элементов, которые уже видны при загрузке
+    setTimeout(animateOnScroll, 100);
+    
+    // Добавляем обработчик прокрутки
+    window.addEventListener('scroll', animateOnScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', animateOnScroll);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="pt-24">
-        {/* Page title section */}
+        {/* Заголовок страницы */}
         <div className="bg-kaluga-50 py-16">
           <div className="container-custom">
             <h1 className="text-4xl md:text-5xl font-serif font-medium text-kaluga-800 mb-4">
@@ -116,22 +259,68 @@ const History = () => {
           </div>
         </div>
         
-        {/* Main content - historical timeline from HistorySection component */}
-        <HistorySection />
-        
-        {/* Extended historical periods section */}
+        {/* Хронология по векам */}
         <section className="py-16 bg-white">
           <div className="container-custom">
             <h2 className="text-3xl font-serif font-medium text-kaluga-800 mb-8 text-center">
-              Исторические периоды развития города
+              Хронология истории Калуги
             </h2>
             
-            <div className="space-y-12">
+            <div className="timeline-container relative">
+              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-kaluga-200"></div>
+              
+              {centuryTimeline.map((century, centuryIndex) => (
+                <div key={centuryIndex} className="mb-16 last:mb-0">
+                  <div className="flex items-center justify-center mb-8 relative">
+                    <div className="bg-kaluga-500 text-white font-medium rounded-full py-2 px-6 z-10">
+                      {century.century}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    {century.events.map((event, eventIndex) => (
+                      <div 
+                        key={eventIndex} 
+                        className={`animate-on-scroll opacity-0 translate-y-10 transition-all duration-500 ease-out flex ${
+                          eventIndex % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
+                        }`}
+                        style={{ transitionDelay: `${eventIndex * 0.1}s` }}
+                      >
+                        <div className={`w-1/2 ${eventIndex % 2 === 0 ? 'pr-12 text-right' : 'pl-12'}`}>
+                          <div className={`glass-card p-4 rounded-lg ${eventIndex % 2 === 0 ? 'ml-auto' : ''} max-w-md`}>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-kaluga-100 text-kaluga-800 mb-2">
+                              <Calendar size={12} className="mr-1" />
+                              {event.year}
+                            </span>
+                            <p className="text-kaluga-700">{event.event}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-kaluga-400 z-10 mt-6"></div>
+                        
+                        <div className="w-1/2"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        
+        {/* Исторические периоды */}
+        <section className="py-16 bg-kaluga-50">
+          <div className="container-custom">
+            <h2 className="text-3xl font-serif font-medium text-kaluga-800 mb-8 text-center">
+              Исторические периоды развития Калуги
+            </h2>
+            
+            <div className="space-y-10">
               {historicalPeriods.map((period, index) => (
                 <div 
                   key={index} 
-                  className="glass-card p-8 rounded-lg shadow-sm animate-on-scroll opacity-0"
-                  style={{ animationDelay: `${index * 0.2}s` }}
+                  className="animate-on-scroll opacity-0 translate-y-10 transition-all duration-500 ease-out glass-card p-8 rounded-lg shadow-sm"
+                  style={{ transitionDelay: `${index * 0.2}s` }}
                 >
                   <div className="flex items-center mb-4">
                     <div className="w-12 h-12 rounded-full bg-kaluga-100 flex items-center justify-center mr-4 flex-shrink-0">
@@ -161,22 +350,67 @@ const History = () => {
           </div>
         </section>
         
-        {/* Historical landmarks section */}
+        {/* Исторические личности */}
+        <section className="py-16 bg-white">
+          <div className="container-custom">
+            <h2 className="text-3xl font-serif font-medium text-kaluga-800 mb-8 text-center">
+              Выдающиеся исторические личности
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {historicalFigures.map((figure, index) => (
+                <div 
+                  key={index} 
+                  className="animate-on-scroll opacity-0 translate-y-10 transition-all duration-500 ease-out glass-card p-6 rounded-lg"
+                  style={{ transitionDelay: `${index * 0.15}s` }}
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 rounded-full bg-kaluga-100 flex items-center justify-center mr-4">
+                      <BookOpen size={20} className="text-kaluga-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-medium text-kaluga-800">{figure.name}</h3>
+                      <p className="text-kaluga-500 text-sm">{figure.years}</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-kaluga-600 mb-4 text-sm leading-relaxed">
+                    {figure.description}
+                  </p>
+                  
+                  <div className="bg-kaluga-50 p-3 rounded-md">
+                    <h4 className="text-sm font-medium text-kaluga-700 mb-2">Основные достижения:</h4>
+                    <ul className="text-xs space-y-1">
+                      {figure.achievements.map((achievement, achieveIndex) => (
+                        <li key={achieveIndex} className="flex items-start">
+                          <Award size={12} className="text-kaluga-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <span className="text-kaluga-600">{achievement}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        
+        {/* Исторические достопримечательности */}
         <section className="py-16 bg-kaluga-50">
           <div className="container-custom">
             <h2 className="text-3xl font-serif font-medium text-kaluga-800 mb-8 text-center">
-              Исторические достопримечательности
+              Исторические памятники и достопримечательности
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {historicalLandmarks.map((landmark, index) => (
                 <div 
                   key={index} 
-                  className="bg-white p-6 rounded-lg shadow-sm animate-on-scroll opacity-0"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="animate-on-scroll opacity-0 translate-y-10 transition-all duration-500 ease-out bg-white p-6 rounded-lg shadow-sm"
+                  style={{ transitionDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-center mb-4">
-                    <div className="w-10 h-10 rounded-full bg-kaluga-100 flex items-center justify-center mr-3 flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-kaluga-100 flex items-center justify-center mr-3">
                       <MapPin size={18} className="text-kaluga-600" />
                     </div>
                     <div>
@@ -194,65 +428,54 @@ const History = () => {
           </div>
         </section>
         
-        {/* Historical figures section */}
+        {/* Исторические источники */}
         <section className="py-16 bg-white">
           <div className="container-custom">
             <h2 className="text-3xl font-serif font-medium text-kaluga-800 mb-8 text-center">
-              Выдающиеся личности в истории Калуги
+              Источники и литература о Калуге
             </h2>
             
-            <div className="glass-card p-8 rounded-lg shadow-sm">
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="md:w-1/2">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 rounded-full bg-kaluga-100 flex items-center justify-center mr-4 flex-shrink-0">
-                      <BookOpen size={24} className="text-kaluga-600" />
-                    </div>
-                    <h3 className="text-2xl font-serif font-medium text-kaluga-800">К.Э. Циолковский</h3>
-                  </div>
-                  
-                  <p className="text-kaluga-600 mb-4 leading-relaxed">
-                    Константин Эдуардович Циолковский (1857-1935) — выдающийся ученый, основоположник 
-                    теоретической космонавтики. Жил и работал в Калуге с 1892 по 1935 год. Именно здесь 
-                    были написаны его знаменитые труды по освоению космического пространства.
-                  </p>
-                  
-                  <p className="text-kaluga-600 leading-relaxed">
-                    В Калуге Циолковский работал учителем физики и математики, проводил научные 
-                    исследования в области аэродинамики, ракетной техники и космонавтики. Его 
-                    имя неразрывно связано с историей города, который часто называют "колыбелью 
-                    космонавтики".
-                  </p>
+            <div className="glass-card p-6 md:p-8 rounded-lg animate-on-scroll opacity-0 translate-y-10 transition-all duration-500 ease-out">
+              <div className="flex items-center mb-6">
+                <FileText size={24} className="text-kaluga-600 mr-3" />
+                <h3 className="text-2xl font-medium text-kaluga-800">Рекомендуемые книги и источники</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-medium text-kaluga-700 mb-3">Исторические монографии</h4>
+                  <ul className="space-y-2">
+                    <li className="text-kaluga-600">
+                      <span className="font-medium">Малинин Д.И.</span> - "Калуга. Опыт исторического путеводителя по Калуге и главнейшим центрам губернии"
+                    </li>
+                    <li className="text-kaluga-600">
+                      <span className="font-medium">Морозова Г.М.</span> - "Прогулки по старой Калуге"
+                    </li>
+                    <li className="text-kaluga-600">
+                      <span className="font-medium">Писарев С.И.</span> - "Калуга на рубеже веков"
+                    </li>
+                    <li className="text-kaluga-600">
+                      <span className="font-medium">Продувнов В.Е.</span> - "Это моя Калуга"
+                    </li>
+                  </ul>
                 </div>
                 
-                <div className="md:w-1/2">
-                  <h4 className="font-medium text-kaluga-700 mb-3">Другие выдающиеся калужане:</h4>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-kaluga-50 p-4 rounded-md">
-                      <h5 className="font-medium text-kaluga-800 mb-1">А.Л. Чижевский (1897-1964)</h5>
-                      <p className="text-kaluga-600">
-                        Ученый-биофизик, основоположник гелиобиологии, изобретатель аэроионизации. 
-                        Был другом и соратником К.Э. Циолковского.
-                      </p>
-                    </div>
-                    
-                    <div className="bg-kaluga-50 p-4 rounded-md">
-                      <h5 className="font-medium text-kaluga-800 mb-1">Д.И. Малинин (1879-1933)</h5>
-                      <p className="text-kaluga-600">
-                        Выдающийся краевед, историк Калужского края, автор множества трудов по 
-                        истории Калуги и Калужской губернии.
-                      </p>
-                    </div>
-                    
-                    <div className="bg-kaluga-50 p-4 rounded-md">
-                      <h5 className="font-medium text-kaluga-800 mb-1">П.М. Голубицкий (1845-1911)</h5>
-                      <p className="text-kaluga-600">
-                        Изобретатель в области телефонии, создавший один из первых многоканальных телефонов. 
-                        Жил и работал в Калужской губернии.
-                      </p>
-                    </div>
-                  </div>
+                <div>
+                  <h4 className="font-medium text-kaluga-700 mb-3">Архивные материалы и источники</h4>
+                  <ul className="space-y-2">
+                    <li className="text-kaluga-600">
+                      Государственный архив Калужской области (ГАКО)
+                    </li>
+                    <li className="text-kaluga-600">
+                      Калужский областной краеведческий музей
+                    </li>
+                    <li className="text-kaluga-600">
+                      Летописи и хроники XVII-XIX веков
+                    </li>
+                    <li className="text-kaluga-600">
+                      "Памятные книжки Калужской губернии" (издавались с 1856 года)
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -260,6 +483,12 @@ const History = () => {
         </section>
       </div>
       <Footer />
+
+      <style jsx>{`
+        .animate-on-scroll {
+          transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
