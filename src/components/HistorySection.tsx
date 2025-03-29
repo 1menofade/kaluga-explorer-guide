@@ -134,11 +134,13 @@ const HistorySection = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>
+        {`
         .animate-fade-in {
           opacity: 1 !important;
         }
-      `}</style>
+        `}
+      </style>
     </section>
   );
 };

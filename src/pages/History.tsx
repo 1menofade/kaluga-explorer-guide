@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -484,11 +483,13 @@ const History = () => {
       </div>
       <Footer />
 
-      <style jsx>{`
+      <style>
+        {`
         .animate-on-scroll {
           transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
