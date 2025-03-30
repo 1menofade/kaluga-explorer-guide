@@ -112,6 +112,17 @@ const Attractions = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
+      {/* New title section with consistent styling */}
+      <div className="bg-kaluga-50 py-16">
+        <div className="container-custom">
+          <span className="section-subtitle">Путеводитель</span>
+          <h1 className="section-title">Достопримечательности Калуги</h1>
+          <p className="text-kaluga-600 text-lg max-w-3xl mt-4">
+            Исследуйте самые интересные места Калуги: от Музея космонавтики до исторических памятников архитектуры.
+          </p>
+        </div>
+      </div>
+
       <main className="flex-1 py-12 bg-gradient-radial from-white to-kaluga-50">
         <div className="container-custom">
           <div className="text-center mb-16">
@@ -272,7 +283,7 @@ const Attractions = () => {
           </div>
         </div>
       </main>
-
+      
       <Footer />
     </div>
   );

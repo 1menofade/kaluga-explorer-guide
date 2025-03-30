@@ -78,6 +78,17 @@ const RoutesPage = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
+      {/* New title section with consistent styling */}
+      <div className="bg-kaluga-50 py-16">
+        <div className="container-custom">
+          <span className="section-subtitle">Маршруты</span>
+          <h1 className="section-title">Готовые маршруты по Калуге</h1>
+          <p className="text-kaluga-600 text-lg max-w-3xl mt-4">
+            Выбирайте один из наших тематических маршрутов для знакомства с городом или создайте свой собственный.
+          </p>
+        </div>
+      </div>
+
       <main className="flex-1 py-12 bg-gradient-radial from-white to-kaluga-50">
         <div className="container-custom">
           <div className="text-center mb-16">
