@@ -113,7 +113,7 @@ const Attractions = () => {
       <Navbar />
       
       {/* New title section with consistent styling */}
-      <div className="bg-kaluga-50 py-16">
+      <div className="bg-kaluga-50 py-16 pt-24">
         <div className="container-custom">
           <span className="section-subtitle">Путеводитель</span>
           <h1 className="section-title">Достопримечательности Калуги</h1>
