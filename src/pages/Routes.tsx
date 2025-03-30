@@ -5,11 +5,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { MapPin, Clock, Route, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import YandexMap from '@/components/YandexMap';
+
 interface RoutePoint {
   id: number;
   name: string;
   address: string;
 }
+
 interface TourRoute {
   id: number;
   name: string;
@@ -20,88 +22,92 @@ interface TourRoute {
   image: string;
   points: RoutePoint[];
 }
-const tourRoutes: TourRoute[] = [{
-  id: 1,
-  name: 'Космическая Калуга',
-  description: 'Маршрут по местам, связанным с космонавтикой и наследием К.Э. Циолковского.',
-  duration: '3-4 часа',
-  distance: '5 км',
-  difficulty: 'Легкий',
-  image: 'https://images.unsplash.com/photo-1492321936769-b49830bc1d1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  points: [{
+
+const tourRoutes: TourRoute[] = [
+  {
     id: 1,
-    name: 'Музей космонавтики',
-    address: 'ул. Академика Королёва, 2, Калуга'
+    name: 'Космическая Калуга',
+    description: 'Маршрут по местам, связанным с космонавтикой и наследием К.Э. Циолковского.',
+    duration: '3-4 часа',
+    distance: '5 км',
+    difficulty: 'Легкий',
+    image: 'https://images.unsplash.com/photo-1492321936769-b49830bc1d1e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    points: [{
+      id: 1,
+      name: 'Музей космонавтики',
+      address: 'ул. Академика Королёва, 2, Калуга'
+    }, {
+      id: 2,
+      name: 'Дом-музей К.Э. Циолковского',
+      address: 'ул. Циолковского, 79, Калуга'
+    }, {
+      id: 3,
+      name: 'Памятник К.Э. Циолковскому',
+      address: 'площадь Мира, Калуга'
+    }]
   }, {
     id: 2,
-    name: 'Дом-музей К.Э. Циолковского',
-    address: 'ул. Циолковского, 79, Калуга'
+    name: 'Исторический центр',
+    description: 'Прогулка по историческому центру города с посещением архитектурных памятников.',
+    duration: '2-3 часа',
+    distance: '3 км',
+    difficulty: 'Легкий',
+    image: 'https://images.unsplash.com/photo-1466442929976-97f336a657be?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    points: [{
+      id: 4,
+      name: 'Каменный мост',
+      address: 'ул. Пушкина, Калуга'
+    }, {
+      id: 5,
+      name: 'Гостиный двор',
+      address: 'ул. Ленина, 126, Калуга'
+    }, {
+      id: 6,
+      name: 'Калужский областной драматический театр',
+      address: 'пл. Театральная, 1, Калуга'
+    }]
   }, {
     id: 3,
-    name: 'Памятник К.Э. Циолковскому',
-    address: 'площадь Мира, Калуга'
-  }]
-}, {
-  id: 2,
-  name: 'Исторический центр',
-  description: 'Прогулка по историческому центру города с посещением архитектурных памятников.',
-  duration: '2-3 часа',
-  distance: '3 км',
-  difficulty: 'Легкий',
-  image: 'https://images.unsplash.com/photo-1466442929976-97f336a657be?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  points: [{
-    id: 4,
-    name: 'Каменный мост',
-    address: 'ул. Пушкина, Калуга'
-  }, {
-    id: 5,
-    name: 'Гостиный двор',
-    address: 'ул. Ленина, 126, Калуга'
-  }, {
-    id: 6,
-    name: 'Калужский областной драматический театр',
-    address: 'пл. Театральная, 1, Калуга'
-  }]
-}, {
-  id: 3,
-  name: 'Архитектурное наследие',
-  description: 'Маршрут по старинным зданиям и архитектурным памятникам города.',
-  duration: '4-5 часов',
-  distance: '6 км',
-  difficulty: 'Средний',
-  image: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-  points: [{
-    id: 5,
-    name: 'Гостиный двор',
-    address: 'ул. Ленина, 126, Калуга'
-  }, {
-    id: 6,
-    name: 'Палаты Коробовых',
-    address: 'ул. Плеханова, 88, Калуга'
-  }, {
-    id: 4,
-    name: 'Каменный мост',
-    address: 'ул. Пушкина, Калуга'
-  }, {
-    id: 7,
-    name: 'Дом Губернатора',
-    address: 'ул. Ленина, 74, Калуга'
-  }]
-}];
+    name: 'Архитектурное наследие',
+    description: 'Маршрут по старинным зданиям и архитектурным памятникам города.',
+    duration: '4-5 часов',
+    distance: '6 км',
+    difficulty: 'Средний',
+    image: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    points: [{
+      id: 5,
+      name: 'Гостиный двор',
+      address: 'ул. Ленина, 126, Калуга'
+    }, {
+      id: 6,
+      name: 'Палаты Коробовых',
+      address: 'ул. Плеханова, 88, Калуга'
+    }, {
+      id: 4,
+      name: 'Каменный мост',
+      address: 'ул. Пушкина, Калуга'
+    }, {
+      id: 7,
+      name: 'Дом Губернатора',
+      address: 'ул. Ленина, 74, Калуга'
+    }]
+  }
+];
+
 const RoutesPage = () => {
   const [selectedRoute, setSelectedRoute] = useState<TourRoute | null>(null);
   const [showMap, setShowMap] = useState(false);
+
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       {/* Title section with consistent styling */}
       <div className="bg-kaluga-50 py-16 pt-24">
         <div className="container-custom">
-          <span className="section-subtitle">Маршруты</span>
-          <h1 className="section-title">
-
-Готовые маршруты по Калуге</h1>
-          <p className="text-kaluga-600 text-lg max-w-3xl mt-4">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium text-kaluga-800 mb-4">
+            Готовые маршруты по Калуге
+          </h1>
+          <p className="text-kaluga-600 text-lg max-w-3xl">
             Выбирайте один из наших тематических маршрутов для знакомства с городом или создайте свой собственный.
           </p>
         </div>
@@ -239,4 +245,5 @@ const RoutesPage = () => {
       <Footer />
     </div>;
 };
+
 export default RoutesPage;

@@ -115,9 +115,10 @@ const Attractions = () => {
       {/* Title section with consistent styling */}
       <div className="bg-kaluga-50 py-16 pt-24">
         <div className="container-custom">
-          <span className="section-subtitle">Путеводитель</span>
-          <h1 className="section-title">Достопримечательности Калуги</h1>
-          <p className="text-kaluga-600 text-lg max-w-3xl mt-4">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium text-kaluga-800 mb-4">
+            Достопримечательности Калуги
+          </h1>
+          <p className="text-kaluga-600 text-lg max-w-3xl">
             Исследуйте самые интересные места Калуги: от Музея космонавтики до исторических памятников архитектуры.
           </p>
         </div>
