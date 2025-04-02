@@ -71,10 +71,11 @@ const YandexMap: React.FC<YandexMapProps> = ({ points }) => {
   }, [points]);
 
   return (
-    <div ref={mapRef} className="w-full h-full" id="yandex-map">
-      <div className="flex items-center justify-center w-full h-full bg-kaluga-50">
+    <div className="w-full h-full relative">
+      <div className="flex items-center justify-center w-full h-full bg-kaluga-50 absolute top-0 left-0 z-0">
         <p className="text-kaluga-500">Загрузка карты...</p>
       </div>
+      <div ref={mapRef} className="w-full h-full absolute top-0 left-0 z-10" id="yandex-map"></div>
     </div>
   );
 };

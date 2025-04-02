@@ -154,7 +154,7 @@ const RoutePlanner: React.FC<RoutePlannerProps> = ({
         
         {showMap && (
           <div className="mt-4 h-96 rounded-md overflow-hidden">
-            <YandexMap points={attractions} />
+            <YandexMap points={attractions} key={attractions.map(a => a.id).join(',')} />
           </div>
         )}
       </CardContent>
