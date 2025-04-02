@@ -1,246 +1,384 @@
 
-// Attractions JavaScript file
-
+// Load attractions data
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize attractions
-  loadAttractions();
-  
-  // Initialize filters
-  initFilters();
+  loadAttractionsData();
+  initFilterFunctionality();
 });
 
-// Sample attraction data (this would typically come from a backend API)
+// Sample attractions data - in a real application, this would come from a server/API
 const attractionsData = [
   {
     id: 1,
-    name: 'Государственный музей космонавтики',
-    description: 'Первый в мире и крупнейший в России музей космической тематики. Здесь представлены образцы космической техники, личные вещи космонавтов и многое другое.',
-    image: 'https://images.unsplash.com/photo-1517976487492-5750f3195933?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'museum',
+    name: 'Музей космонавтики',
+    description: 'Один из крупнейших в России музеев космической тематики. Расположен в Калуге, считающейся родиной теоретической космонавтики.',
+    image: 'https://images.unsplash.com/photo-1492321936769-b49830bc1d1e',
+    category: 'Музей',
     address: 'ул. Академика Королёва, 2, Калуга',
-    coordinates: [54.526226, 36.270928]
+    popularity: 95
   },
   {
     id: 2,
     name: 'Дом-музей К.Э. Циолковского',
-    description: 'Мемориальный дом-музей, где долгие годы жил и работал великий учёный, основоположник теоретической космонавтики Константин Эдуардович Циолковский.',
-    image: 'https://images.unsplash.com/photo-1516515516654-dfb5c7117508?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'museum',
+    description: 'Мемориальный дом-музей, где жил и работал основоположник теоретической космонавтики Константин Эдуардович Циолковский.',
+    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716',
+    category: 'Музей',
     address: 'ул. Циолковского, 79, Калуга',
-    coordinates: [54.514289, 36.261842]
+    popularity: 88
   },
   {
     id: 3,
     name: 'Калужский областной драматический театр',
-    description: 'Один из старейших драматических театров России, основанный в 1777 году. Здание театра является памятником архитектуры XIX века.',
-    image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'cultural',
+    description: 'Один из старейших драматических театров России, основанный в 1777 году.',
+    image: 'https://images.unsplash.com/photo-1466442929976-97f336a657be',
+    category: 'Культура',
     address: 'пл. Театральная, 1, Калуга',
-    coordinates: [54.513543, 36.261686]
+    popularity: 82
   },
   {
     id: 4,
-    name: 'Свято-Троицкий кафедральный собор',
-    description: 'Главный православный храм Калуги, построенный в XVIII веке в стиле барокко. Собор является историческим и архитектурным памятником.',
-    image: 'https://images.unsplash.com/photo-1585083969600-495ee7e3604b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'religious',
-    address: 'ул. Ленина, 106, Калуга',
-    coordinates: [54.514156, 36.232843]
+    name: 'Каменный мост',
+    description: 'Визитная карточка города, построенная в 1785 году по проекту П.Р. Никитина.',
+    image: 'https://images.unsplash.com/photo-1426604966848-d7adac402bff',
+    category: 'Архитектура',
+    address: 'ул. Пушкина, Калуга',
+    popularity: 90
   },
   {
     id: 5,
-    name: 'Калужский областной художественный музей',
-    description: 'Один из старейших художественных музеев России, основанный в 1918 году. В коллекции представлены произведения русского и западноевропейского искусства.',
-    image: 'https://images.unsplash.com/photo-1566346962706-0548d2511445?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'museum',
-    address: 'ул. Ленина, 104, Калуга',
-    coordinates: [54.514396, 36.231793]
+    name: 'Гостиный двор',
+    description: 'Историческое здание XVIII века, памятник архитектуры федерального значения.',
+    image: 'https://images.unsplash.com/photo-1551038247-3d9af20df552',
+    category: 'Архитектура',
+    address: 'ул. Ленина, 126, Калуга',
+    popularity: 75
   },
   {
     id: 6,
-    name: 'Калужский Гостиный двор',
-    description: 'Памятник архитектуры XVIII века, построенный в стиле классицизма. Сегодня это торговый центр с множеством магазинов и кафе.',
-    image: 'https://images.unsplash.com/photo-1565329921943-7e537b7a2ea9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'historical',
-    address: 'ул. Ленина, 73, Калуга',
-    coordinates: [54.512794, 36.252839]
+    name: 'Палаты Коробовых',
+    description: 'Старейшее гражданское здание Калуги, построенное в XVII веке.',
+    image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625',
+    category: 'Архитектура',
+    address: 'ул. Плеханова, 88, Калуга',
+    popularity: 68
   },
   {
     id: 7,
-    name: 'Парк культуры и отдыха',
-    description: 'Центральный городской парк Калуги с аттракционами, прогулочными аллеями и площадками для отдыха. Идеальное место для семейного отдыха.',
-    image: 'https://images.unsplash.com/photo-1564951434112-64d74cc2a2d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'nature',
-    address: 'ул. Марата, 2, Калуга',
-    coordinates: [54.513866, 36.270295]
+    name: 'Государственный музей истории космонавтики',
+    description: 'Крупнейший в России музей космической тематики, открытый при участии С.П. Королёва и Ю.А. Гагарина.',
+    image: 'https://images.unsplash.com/photo-1454789548928-9efd52dc4031',
+    category: 'Музей',
+    address: 'ул. Академика Королёва, 2, Калуга',
+    popularity: 96
   },
   {
     id: 8,
-    name: 'Усадьба Золотарёвых',
-    description: 'Памятник архитектуры XIX века, яркий образец городской усадьбы в стиле классицизма. Сегодня здесь располагается краеведческий музей.',
-    image: 'https://images.unsplash.com/photo-1531746244600-5ca18a801108?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80',
-    category: 'historical',
-    address: 'ул. Пушкина, 14, Калуга',
-    coordinates: [54.511589, 36.245748]
+    name: 'Дом Губернатора',
+    description: 'Историческое здание XIX века, в котором сейчас располагается художественный музей.',
+    image: 'https://images.unsplash.com/photo-1472396961693-142e6e269027',
+    category: 'Музей',
+    address: 'ул. Ленина, 74, Калуга',
+    popularity: 72
+  },
+  {
+    id: 9,
+    name: 'Парк культуры и отдыха',
+    description: 'Центральный городской парк с аттракционами, тенистыми аллеями и спортивными площадками.',
+    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1',
+    category: 'Отдых',
+    address: 'ул. Марата, 2, Калуга',
+    popularity: 85
   }
 ];
 
-// Load attractions on the page
-function loadAttractions() {
+// Function to load and display attractions
+function loadAttractionsData() {
   const attractionsGrid = document.getElementById('attractions-grid');
   if (!attractionsGrid) return;
   
   // Clear loading message
   attractionsGrid.innerHTML = '';
   
-  // Get filter values (if on attractions page)
-  const categoryFilter = document.getElementById('category-filter');
-  let selectedCategory = categoryFilter ? categoryFilter.value : 'all';
+  // Get selected attractions from local storage
+  const selectedAttractions = JSON.parse(localStorage.getItem('selectedAttractions') || '[]');
+  const selectedIds = selectedAttractions.map(a => a.id);
   
-  // Filter attractions if needed
-  let filteredAttractions = attractionsData;
-  if (selectedCategory !== 'all') {
-    filteredAttractions = attractionsData.filter(attraction => attraction.category === selectedCategory);
-  }
-  
-  // Limit number of attractions on home page
-  const isHomePage = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
-  if (isHomePage) {
-    filteredAttractions = filteredAttractions.slice(0, 4);
-  }
-  
-  // Display attractions
-  filteredAttractions.forEach(attraction => {
-    const categoryLabel = getCategoryLabel(attraction.category);
-    
-    const attractionCard = document.createElement('div');
-    attractionCard.className = 'attraction-card';
-    attractionCard.innerHTML = `
+  // Render attractions
+  attractionsData.forEach(attraction => {
+    const isSelected = selectedIds.includes(attraction.id);
+    const card = document.createElement('div');
+    card.className = 'attraction-card';
+    card.innerHTML = `
       <div class="attraction-image">
         <img src="${attraction.image}" alt="${attraction.name}">
-        <span class="attraction-category">${categoryLabel}</span>
+        <span class="attraction-category">${attraction.category}</span>
       </div>
       <div class="attraction-content">
         <h3>${attraction.name}</h3>
         <p>${attraction.description}</p>
         <div class="attraction-actions">
-          <a href="/attraction-details.html?id=${attraction.id}" class="btn-outline">Подробнее</a>
-          <button class="add-to-route" data-id="${attraction.id}" data-name="${attraction.name}" data-address="${attraction.address}" data-coordinates="${attraction.coordinates}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9 12H15M12 9V15M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Добавить
+          <a href="attraction-detail.html?id=${attraction.id}" class="btn-outline">Подробнее</a>
+          <button class="add-to-route ${isSelected ? 'added' : ''}" data-id="${attraction.id}">
+            ${isSelected ? `
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12L10 17L19 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              В маршруте
+            ` : `
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              В маршрут
+            `}
           </button>
         </div>
       </div>
     `;
-    
-    attractionsGrid.appendChild(attractionCard);
+    attractionsGrid.appendChild(card);
   });
   
-  // Initialize "Add to route" buttons
-  initAddToRouteButtons();
-}
-
-// Initialize filter functionality
-function initFilters() {
-  const filterButton = document.getElementById('filter-button');
-  if (filterButton) {
-    filterButton.addEventListener('click', () => {
-      loadAttractions();
+  // Add event listeners to "Add to route" buttons
+  document.querySelectorAll('.add-to-route').forEach(button => {
+    button.addEventListener('click', function() {
+      const attractionId = parseInt(this.getAttribute('data-id'));
+      const attraction = attractionsData.find(a => a.id === attractionId);
+      
+      if (attraction) {
+        const selectedAttractions = JSON.parse(localStorage.getItem('selectedAttractions') || '[]');
+        const isAlreadySelected = selectedAttractions.some(a => a.id === attractionId);
+        
+        if (isAlreadySelected) {
+          // Remove from route
+          const updatedAttractions = selectedAttractions.filter(a => a.id !== attractionId);
+          localStorage.setItem('selectedAttractions', JSON.stringify(updatedAttractions));
+          
+          this.classList.remove('added');
+          this.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            В маршрут
+          `;
+          
+          showToast(`"${attraction.name}" удалено из маршрута`);
+          
+          // Update route planner button or remove it if empty
+          updateRoutePlannerButton(updatedAttractions.length);
+        } else {
+          // Add to route
+          selectedAttractions.push(attraction);
+          localStorage.setItem('selectedAttractions', JSON.stringify(selectedAttractions));
+          
+          this.classList.add('added');
+          this.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12L10 17L19 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            В маршруте
+          `;
+          
+          showToast(`"${attraction.name}" добавлено в маршрут`);
+          
+          // Update route planner button or create it if first item
+          updateRoutePlannerButton(selectedAttractions.length);
+        }
+      }
     });
-  }
+  });
 }
 
-// Helper function to get readable category labels
-function getCategoryLabel(category) {
-  const labels = {
-    'historical': 'Историческое',
-    'museum': 'Музей',
-    'cultural': 'Культурное',
-    'religious': 'Религиозное',
-    'nature': 'Природное'
-  };
+// Function to initialize filter functionality
+function initFilterFunctionality() {
+  const categoryFilter = document.getElementById('category-filter');
+  const sortFilter = document.getElementById('sort-filter');
+  const filterButton = document.getElementById('filter-button');
   
-  return labels[category] || category;
-}
-
-// Initialize "Add to route" buttons
-function initAddToRouteButtons() {
-  const addToRouteButtons = document.querySelectorAll('.add-to-route');
+  if (!categoryFilter || !sortFilter || !filterButton) return;
   
-  addToRouteButtons.forEach(button => {
-    const attractionId = parseInt(button.dataset.id);
-    const isInRoute = isAttractionInRoute(attractionId);
+  // Populate category filter with unique categories
+  const categories = ['all', ...new Set(attractionsData.map(a => a.category.toLowerCase()))];
+  
+  categoryFilter.innerHTML = '';
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category === 'all' ? 'Все категории' : capitalizeFirstLetter(category);
+    categoryFilter.appendChild(option);
+  });
+  
+  // Add event listener to filter button
+  filterButton.addEventListener('click', applyFilters);
+  
+  // Function to apply filters
+  function applyFilters() {
+    const selectedCategory = categoryFilter.value;
+    const sortBy = sortFilter.value;
     
-    if (isInRoute) {
-      updateAddButtonState(button, true);
+    // Filter by category
+    let filteredAttractions = selectedCategory === 'all' 
+      ? [...attractionsData] 
+      : attractionsData.filter(a => a.category.toLowerCase() === selectedCategory);
+    
+    // Sort attractions
+    if (sortBy === 'name') {
+      filteredAttractions.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'popular') {
+      filteredAttractions.sort((a, b) => b.popularity - a.popularity);
     }
     
-    button.addEventListener('click', () => {
-      const inRoute = isAttractionInRoute(attractionId);
-      
-      if (inRoute) {
-        removeFromRoute(attractionId);
-        updateAddButtonState(button, false);
-      } else {
-        const attraction = {
-          id: attractionId,
-          name: button.dataset.name,
-          address: button.dataset.address,
-          coordinates: button.dataset.coordinates.split(',').map(coord => parseFloat(coord))
-        };
-        
-        addToRoute(attraction);
-        updateAddButtonState(button, true);
-      }
-      
-      // Update route planner if it's visible
-      const routePlanner = document.getElementById('route-planner');
-      if (routePlanner && window.getComputedStyle(routePlanner).display !== 'none') {
-        updateRoutePlannerUI();
-      }
+    // Update the attractions grid
+    const attractionsGrid = document.getElementById('attractions-grid');
+    if (!attractionsGrid) return;
+    
+    // Clear grid
+    attractionsGrid.innerHTML = '';
+    
+    // Get selected attractions from local storage
+    const selectedAttractions = JSON.parse(localStorage.getItem('selectedAttractions') || '[]');
+    const selectedIds = selectedAttractions.map(a => a.id);
+    
+    // Render filtered attractions
+    filteredAttractions.forEach(attraction => {
+      const isSelected = selectedIds.includes(attraction.id);
+      const card = document.createElement('div');
+      card.className = 'attraction-card';
+      card.innerHTML = `
+        <div class="attraction-image">
+          <img src="${attraction.image}" alt="${attraction.name}">
+          <span class="attraction-category">${attraction.category}</span>
+        </div>
+        <div class="attraction-content">
+          <h3>${attraction.name}</h3>
+          <p>${attraction.description}</p>
+          <div class="attraction-actions">
+            <a href="attraction-detail.html?id=${attraction.id}" class="btn-outline">Подробнее</a>
+            <button class="add-to-route ${isSelected ? 'added' : ''}" data-id="${attraction.id}">
+              ${isSelected ? `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12L10 17L19 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                В маршруте
+              ` : `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                В маршрут
+              `}
+            </button>
+          </div>
+        </div>
+      `;
+      attractionsGrid.appendChild(card);
     });
-  });
+    
+    // Re-add event listeners to "Add to route" buttons
+    document.querySelectorAll('.add-to-route').forEach(button => {
+      button.addEventListener('click', function() {
+        const attractionId = parseInt(this.getAttribute('data-id'));
+        const attraction = attractionsData.find(a => a.id === attractionId);
+        
+        if (attraction) {
+          const selectedAttractions = JSON.parse(localStorage.getItem('selectedAttractions') || '[]');
+          const isAlreadySelected = selectedAttractions.some(a => a.id === attractionId);
+          
+          if (isAlreadySelected) {
+            // Remove from route
+            const updatedAttractions = selectedAttractions.filter(a => a.id !== attractionId);
+            localStorage.setItem('selectedAttractions', JSON.stringify(updatedAttractions));
+            
+            this.classList.remove('added');
+            this.innerHTML = `
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              В маршрут
+            `;
+            
+            showToast(`"${attraction.name}" удалено из маршрута`);
+            
+            // Update route planner button or remove it if empty
+            updateRoutePlannerButton(updatedAttractions.length);
+          } else {
+            // Add to route
+            selectedAttractions.push(attraction);
+            localStorage.setItem('selectedAttractions', JSON.stringify(selectedAttractions));
+            
+            this.classList.add('added');
+            this.innerHTML = `
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12L10 17L19 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              В маршруте
+            `;
+            
+            showToast(`"${attraction.name}" добавлено в маршрут`);
+            
+            // Update route planner button or create it if first item
+            updateRoutePlannerButton(selectedAttractions.length);
+          }
+        }
+      });
+    });
+  }
 }
 
-// Check if attraction is already in route
-function isAttractionInRoute(attractionId) {
-  const savedRoute = JSON.parse(localStorage.getItem('plannedRoute') || '[]');
-  return savedRoute.some(item => item.id === attractionId);
-}
-
-// Add attraction to route
-function addToRoute(attraction) {
-  const savedRoute = JSON.parse(localStorage.getItem('plannedRoute') || '[]');
-  savedRoute.push(attraction);
-  localStorage.setItem('plannedRoute', JSON.stringify(savedRoute));
-}
-
-// Remove attraction from route
-function removeFromRoute(attractionId) {
-  const savedRoute = JSON.parse(localStorage.getItem('plannedRoute') || '[]');
-  const updatedRoute = savedRoute.filter(item => item.id !== attractionId);
-  localStorage.setItem('plannedRoute', JSON.stringify(updatedRoute));
-}
-
-// Update "Add to route" button state
-function updateAddButtonState(button, isAdded) {
-  if (isAdded) {
-    button.classList.add('added');
-    button.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 12L10 17L19 8M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Добавлено
-    `;
+// Helper function to update the route planner button
+function updateRoutePlannerButton(count) {
+  let routePlannerBtn = document.querySelector('.route-planner-btn');
+  
+  if (count === 0) {
+    // Remove button if there are no selected attractions
+    if (routePlannerBtn) {
+      routePlannerBtn.remove();
+    }
   } else {
-    button.classList.remove('added');
-    button.innerHTML = `
+    if (!routePlannerBtn) {
+      // Create button if it doesn't exist
+      routePlannerBtn = document.createElement('button');
+      routePlannerBtn.className = 'btn-primary route-planner-btn';
+      document.body.appendChild(routePlannerBtn);
+      
+      routePlannerBtn.addEventListener('click', () => {
+        document.getElementById('route-planner-modal').classList.add('open');
+      });
+    }
+    
+    // Update button text
+    routePlannerBtn.innerHTML = `
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 12H15M12 9V15M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M22 12H2M2 12L8 6M2 12L8 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      Добавить
+      Мой маршрут (${count})
     `;
   }
+}
+
+// Helper function to show toast notification
+function showToast(message) {
+  // Create toast element if it doesn't exist
+  let toast = document.querySelector('.toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+  }
+  
+  // Set message and show
+  toast.textContent = message;
+  toast.classList.remove('show');
+  
+  // Force repaint
+  void toast.offsetWidth;
+  
+  // Show toast
+  toast.classList.add('show');
+  
+  // Hide after delay
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+// Helper function to capitalize first letter
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
