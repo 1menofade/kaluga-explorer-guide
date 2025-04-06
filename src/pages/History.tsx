@@ -258,55 +258,6 @@ const History = () => {
           </div>
         </div>
         
-        {/* Хронология по векам */}
-        <section className="py-16 bg-white">
-          <div className="container-custom">
-            <h2 className="text-3xl font-serif font-medium text-kaluga-800 mb-8 text-center">
-              Хронология истории Калуги
-            </h2>
-            
-            <div className="timeline-container relative">
-              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-kaluga-200"></div>
-              
-              {centuryTimeline.map((century, centuryIndex) => (
-                <div key={centuryIndex} className="mb-16 last:mb-0">
-                  <div className="flex items-center justify-center mb-8 relative">
-                    <div className="bg-kaluga-500 text-white font-medium rounded-full py-2 px-6 z-10">
-                      {century.century}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    {century.events.map((event, eventIndex) => (
-                      <div 
-                        key={eventIndex} 
-                        className={`animate-on-scroll opacity-0 translate-y-10 transition-all duration-500 ease-out flex ${
-                          eventIndex % 2 === 0 ? 'flex-row' : 'flex-row-reverse'
-                        }`}
-                        style={{ transitionDelay: `${eventIndex * 0.1}s` }}
-                      >
-                        <div className={`w-1/2 ${eventIndex % 2 === 0 ? 'pr-12 text-right' : 'pl-12'}`}>
-                          <div className={`glass-card p-4 rounded-lg ${eventIndex % 2 === 0 ? 'ml-auto' : ''} max-w-md`}>
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-kaluga-100 text-kaluga-800 mb-2">
-                              <Calendar size={12} className="mr-1" />
-                              {event.year}
-                            </span>
-                            <p className="text-kaluga-700">{event.event}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="absolute left-1/2 transform -translate-x-1/2 w-3 h-3 rounded-full bg-kaluga-400 z-10 mt-6"></div>
-                        
-                        <div className="w-1/2"></div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        
         {/* Исторические периоды */}
         <section className="py-16 bg-kaluga-50">
           <div className="container-custom">
